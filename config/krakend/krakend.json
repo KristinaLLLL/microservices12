@@ -1,0 +1,131 @@
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "endpoints": [
+      {
+        "endpoint": "/v1/books",
+        "method": "GET",
+        "backend": [
+          {
+            "host": [
+              "http://books"
+            ],
+            "url_pattern": "/v1/books",
+            "method": "GET",
+            "is_collection": true,
+            "mapping": {
+              "collection": "books"
+            }
+          }]
+      },
+      {
+        "endpoint": "/v1/books",
+        "method": "POST",
+        "input_query_strings": ["title", "body"],
+        "backend": [
+          {
+            "host": [
+              "http://books"
+            ],
+            "url_pattern": "/v1/books",
+            "method": "POST",
+            "allow": ["title", "body"]
+          }
+        ]
+      },
+      {
+        "endpoint": "/v1/books/{id}",
+        "method": "GET",
+        "output_encoding": "no-op",
+        "backend": [
+          {
+            "encoding": "no-op",
+            "host": [
+              "http://courses"
+            ],
+            "url_pattern": "/v1/books/{id}",
+            "method": "GET"
+          }]
+      },
+      {
+        "endpoint": "/v2/courses",
+        "method": "GET",
+        "backend": [
+          {
+            "host": [
+              "http://courses"
+            ],
+            "url_pattern": "/v2/courses",
+            "method": "GET",
+            "is_collection": true,
+            "mapping": {
+              "collection": "courses"
+            }
+          }]
+      },
+      {
+        "endpoint": "/v2/courses/{title}",
+        "method": "GET",
+        "output_encoding": "no-op",
+        "backend": [
+          {
+            "encoding": "no-op",
+            "host": [
+              "http://courses"
+            ],
+            "url_pattern": "/v2/courses/{title}",
+            "method": "GET"
+          }]
+      },
+
+      {
+        "endpoint": "/v1/data",
+        "method": "GET",
+        "backend": [
+          {
+            "host": [
+              "http://books"
+            ],
+            "url_pattern": "/books/",
+            "method": "GET",
+            "is_collection": true,
+            "mapping": {
+              "collection": "books"
+            }
+          },
+          {
+            "host": [
+              "http://courses"
+            ],
+            "url_pattern": "/v2/courses",
+            "method": "GET",
+            "is_collection": true,
+            "mapping": {
+              "collection": "courses"
+            }
+          }
+        ]
+      }
+    ],
+    "extra_config": {
+      "telemetry/opencensus": {
+        "sample_rate": 100,
+        "reporting_period": 0,
+        "exporters": {
+          "jaeger": {
+            "endpoint": "http://jaeger:14268/api/traces",
+            "service_name": "krakend",
+            "buffer_max_count": 1000
+          },
+           "prometheus": {
+              "port": 9091,
+              "namespace": "krakend",
+              "tag_host": false,
+              "tag_path": true,
+              "tag_method": true,
+              "tag_statuscode": false
+          }
+        }
+      }
+    }
+}
